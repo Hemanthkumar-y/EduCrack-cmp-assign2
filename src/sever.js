@@ -1,32 +1,37 @@
-//schemas
-// const userSchema = new mongoose.Schema({
-//     userName: String,
-//     Password: String
-// });
+const express = require("express");
+const cors = require('cors');
+const mongoose = require("mongoose");
+//const bcrypt = require('bcrypt');
 
-// const scoreSchema = new mongoose.Schema({
-//     score: Number,
-//     done: Boolean,
-//     creationTime: Date,
-//     userId: mongoose.Schema.Types.ObjectId
-// })
+const app = express();
+app.use(express.json());
+app.use(cors());
 
-// const questionSchema = new mongoose.Schema({
-//     category:String,
-//     type:String,
-//     difficulty:String,
-//     question:String,
-//     correct_answer:String,
-//     incorrect_answers:[{
-//         type: String
-//     }]
-// })
+const db = mongoose.createConnection("mongodb://localhost:27017/card", { useNewUrlParser: true, useUnifiedTopology: true });
+const userSchema = new mongoose.Schema({
+    userName: String,
+    CardNumber: Number,
+    CVcode:Number,
+    Date :Date
+});
 
-// const questionSet = new mongoose.Schema({
-    
-// })
+//Model
+const userModel = db.model('users',userSchema);
 
-//MOdels
-// const userModel = db.model('user', userSchema);
-// const scoreModel = db.model('score', scoreSchema);
-// const questionModel = db.model('question',questionSchema);
+app.post('/', async (req, res) => {
+    const {CardNumber,CVcode,userName} = req.body;
+    const newUser = new userModel({
+        userName:userName,
+        CardNumber:CardNumber,
+        CVcode:CVcode
+    });
+    await newUser.save();
+    res.status(201).send();
+});
+
+
+ 
+
+app.listen(8999, () => {
+    console.log("Connecting at  8999");
+});
